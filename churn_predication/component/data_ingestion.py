@@ -22,7 +22,8 @@ class DataIngestion:
             logging.info('read dataset as dataframe')
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
             
-            df.to_excel(self.ingestion_config.raw_data_path)
+            df.to_csv(self.ingestion_config.raw_data_path,index = None,
+                  header=True)
             logging.info(f"Data is downloaded in {self.ingestion_config.raw_data_path}")
             artifacts = DataIngestionArtifact(
                 raw_data=self.ingestion_config.raw_data_path

@@ -14,7 +14,7 @@ class DataValidation:
     def read_data(self) -> DataFrame:
          try:
               
-              dataframe: DataFrame = spark.read_excel( self.data_ingestion_artifact.raw_data).limit(10)
+              dataframe: DataFrame = spark.read.csv( self.data_ingestion_artifact.raw_data).limit(10)
               return dataframe
 
          except Exception as e:

@@ -4,7 +4,7 @@ from churn_predication.logger import logging
 from churn_predication.exception import ChurnException
 from churn_predication.entity.config_entity import DataIngestionConfig
 from churn_predication.config.spark_manager import spark
-
+from pyspark.sql.functions import *
 
 import pandas as pd
 
@@ -17,7 +17,7 @@ class DataIngestion:
     def initiate_data_ingestion(self):
         logging.info('Enter the data ingestion method')
         try:
-            df = spark.read.format("com.crealytics.spark.excel").option("useHeader", "true").option("inferSchema", "true").load('data\Telco_customer_churn.xlsx')  
+            df = spark.read.csv("data/raw_data.csv")
             logging.info('read dataset as dataframe')
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
             
@@ -32,6 +32,3 @@ class DataIngestion:
             logging.exception(e)
             raise(ChurnException(e,sys))
 
-if __name__ == '__main__':
-    obj = DataIngestion()
-    obj.initiate_data_ingestion()

@@ -162,3 +162,5 @@ cython_debug/
 churn/
 data/
 artifacts/
+raw_data.csv
+mongo.py

@@ -9,3 +9,9 @@ class DataIngestionConfig:
 @dataclass
 class DataValidationConfig:
     clean_data_path: str=os.path.join('artifacts', 'clean_data.csv')
+
+
+@dataclass
+
+class DataTransformationConfig:
+    train_path: str = os.path.join('artifacts', 'train.csv')

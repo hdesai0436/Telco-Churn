@@ -38,7 +38,7 @@ class ChurnDataSchema:
         self.CLTV: str = 'CLTV'
         self.Churn_Reason: str = 'Churn Reason'
 
-    @property
+    
     def dataframe_schema(self) -> StructType:
         try:
             schema = StructType([
@@ -80,12 +80,12 @@ class ChurnDataSchema:
         except Exception as e:
             raise(e)
         
-    @property
+    
     def target_column(self) -> str:
         return self.self.Churn_Label
 
 
-    @property
+    
     def one_hot_encoding_features(self) -> List[str]:
         feature = [
             self.Gender,
@@ -109,7 +109,25 @@ class ChurnDataSchema:
         ]
         return feature
     
+    def non_one_hont_encoder(self) -> List[str]:
+        no_feature = [
+            self.Tenure_Months,
+            self.Monthly_Charges,
+            self.Total_Charges
+        ]
+        return no_feature
+    
+    @property
+    def im_one_hot_encoding_features(self) -> List[str]:
+        return [f"im_{col}" for col in self.one_hot_encoding_features]
 
+    @property
+    def string_indexer_one_hot_features(self) -> List[str]:
+        return [f"si_{col}" for col in self.one_hot_encoding_features]
+    
+    @property
+    def tf_one_hot_encoding_features(self) -> List[str]:
+        return [f"tf_{col}" for col in self.one_hot_encoding_features]
     
     def unwanted_columns(self) -> List[str]:
         feature= [
@@ -129,3 +147,16 @@ class ChurnDataSchema:
 
         ]
         return feature
+    
+    def input_feature(self) -> List[str]:
+        in_feature = self.one_hot_encoding_features + self.non_one_hont_encoder
+        return in_feature
+    
+    def vector_assembler_output(self) -> str:
+        return "va_input_features"
+    
+    def target_indexed_label(self) -> str:
+        return f"indexed_{self.target_column}"
+    
+
+

@@ -40,55 +40,43 @@ class ChurnDataSchema:
         self._id: str = '_id'
 
 
-    
+    @property
     def dataframe_schema(self) -> StructType:
         try:
             schema = StructType([
-                 StructField(self.CustomerID, StringType()),
-                 StructField(self.Count, IntegerType()),
-                 StructField(self.Country,StringType()),
-                 StructField(self.State,StringType()),
-                 StructField(self.City,StringType()),
-                 StructField(self.Zip_Code,IntegerType()),
-                 StructField(self.Lat_Long,FloatType()),
-                 StructField(self.Latitude,FloatType()),
-                 StructField(self.Longitude,FloatType()),
-                 StructField(self.Gender, StringType()),
-                 StructField(self.Senior_Citizen, StringType()),
-                 StructField(self.Partner, StringType()),
-                 StructField(self.Dependents, StringType()),
-                 StructField(self.Tenure_Months, IntegerType()),
-                 StructField(self.Phone_Service, StringType()),
-                StructField(self.Multiple_Lines, StringType()),
+                 StructField(self.Churn_Label, StringType()),
+                  StructField(self.Contract, StringType()),
+                  StructField(self.Dependents, StringType()),
+                  StructField(self.Device_Protection, StringType()),
+                  StructField(self.Gender, StringType()),
                 StructField(self.Internet_Service, StringType()),
-                StructField(self.Online_Security, StringType()),
-                StructField(self.Online_Backup, StringType()),
-                StructField(self.Device_Protection, StringType()),
-                StructField(self.Tech_Support, StringType()),
-                StructField(self.Streaming_TV, StringType()),
-                StructField(self.Streaming_Movies, StringType()),
-                StructField(self.Contract, StringType()),
-                StructField(self.Paperless_Billing, StringType()),
-                StructField(self.Payment_Method, StringType()),
                 StructField(self.Monthly_Charges, FloatType()),
-                StructField(self.Total_Charges, FloatType()),
-                StructField(self.Churn_Label, StringType()),
-                 StructField(self.Churn_Value, IntegerType()),
-                  StructField(self.Churn_Score, IntegerType()),
-                   StructField(self.CLTV, IntegerType()),
-                    StructField(self.Churn_Reason, StringType()),
-                    StructField(self._id, StringType())
+                 StructField(self.Multiple_Lines, StringType()),
+                  StructField(self.Online_Backup, StringType()),
+                   StructField(self.Online_Security, StringType()),
+                   StructField(self.Paperless_Billing, StringType()),
+                   StructField(self.Partner, StringType()),
+                StructField(self.Payment_Method, StringType()),
+                    StructField(self.Phone_Service, StringType()),
+                    StructField(self.Senior_Citizen, StringType()),
+                    StructField(self.Streaming_Movies, StringType()),
+                    StructField(self.Streaming_TV, StringType()),
+                    StructField(self.Tech_Support, StringType()),
+                    StructField(self.Tenure_Months, IntegerType()),
+                    StructField(self.Total_Charges, FloatType()),
+
+                  
                 ])
             return schema
         except Exception as e:
             raise(e)
         
-    
+    @property
     def target_column(self) -> str:
-        return self.self.Churn_Label
+        return self.Churn_Label
 
 
-    
+    @property
     def one_hot_encoding_features(self) -> List[str]:
         feature = [
             self.Gender,
@@ -111,7 +99,7 @@ class ChurnDataSchema:
 
         ]
         return feature
-    
+    @property
     def non_one_hont_encoder(self) -> List[str]:
         no_feature = [
             self.Tenure_Months,
@@ -153,7 +141,7 @@ class ChurnDataSchema:
         return feature
     @property
     def input_feature(self) -> List[str]:
-        in_feature = self.one_hot_encoding_features + self.non_one_hont_encoder
+        in_feature = self.tf_one_hot_encoding_features + self.non_one_hont_encoder
         return in_feature
     @property
     def vector_assembler_output(self) -> str:

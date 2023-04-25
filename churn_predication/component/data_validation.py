@@ -62,12 +62,12 @@ class DataValidation(ChurnDataSchema):
          
          
     def get_unwanted_and_high_missing_value_columns(self, dataframe: DataFrame, threshold: float = 0.2) -> List[str]:
-         logging.inof('start get_unwanted_and_high_missing_value_columns method in data validation class')
+         logging.info('start get_unwanted_and_high_missing_value_columns method in data validation class')
          try:
               logging.info('Get the missing value report')
               missing_reports: Dict[str,MissingReport] = self.get_missing_report(dataframe=dataframe)
               logging.info('Get the unwanted columns')
-              unwanted_columns : List[str] = self.schema.unwanted_columns()
+              unwanted_columns : List[str] = self.schema.unwanted_columns
               for column in missing_reports:
                    if missing_reports[column].missing_percentage > (threshold*100):
                         unwanted_columns.append(column)
@@ -101,7 +101,7 @@ class DataValidation(ChurnDataSchema):
               dataframe: DataFrame = self.read_data()
               logging.info('Dropping columns unwanted')
               dataframe: DataFrame = self.drop_unwanted_columns(dataframe=dataframe)
-              dataframe.write.csv(self.data_validation_config.clean_data_path)
+              dataframe.write.csv(self.data_validation_config.clean_data_path,header=True)
               logging.info(f'clean data file saved {self.data_validation_config.clean_data_path}')
               logging.info('finish initiate_data_validation part')
               return (

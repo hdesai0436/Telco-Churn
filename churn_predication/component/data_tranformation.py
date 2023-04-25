@@ -16,7 +16,7 @@ class DataTransformation():
     def __init__(self,data_transformation_config =DataTransformationConfig(), data_validation_artifacts= DataValidationConfig(), schema= ChurnDataSchema()):
         try:
             super().__init__()
-            self.file_path =data_validation_artifacts.clean_data_path()
+            self.file_path =data_validation_artifacts.clean_data_path
             self.data_transformation_config = data_transformation_config
             self.schema = schema
         
@@ -25,7 +25,7 @@ class DataTransformation():
         
     def read_data(self) -> DataFrame:
         try:
-            dataframe: DataFrame = spark.read.csv(self.file_path)
+            dataframe: DataFrame = spark.read.csv(self.file_path,header='true',schema=self.schema.dataframe_schema)
             return dataframe
         except Exception as e:
             raise ChurnException(e,sys)
@@ -56,9 +56,9 @@ class DataTransformation():
            stages.append(label_indexer)
            for im_one_hot_feature, string_indexer_col in zip(self.schema.one_hot_encoding_features,
                                                              self.schema.string_indexer_one_hot_features):
-               string_indexer = StringIndexer(inputCol=im_one_hot_feature,outputCol=string_indexer_col)
+               string_indexer = StringIndexer(inputCols=im_one_hot_feature,outputCol=string_indexer_col)
                stages.append(string_indexer)
-           one_hot_encoder = OneHotEncoder(inputCol=self.schema.string_indexer_one_hot_features,outputCol=self.schema.tf_one_hot_encoding_features)
+           one_hot_encoder = OneHotEncoder(inputCol=self.schema.string_indexer_one_hot_features,outputCols=self.schema.tf_one_hot_encoding_features)
            stages.append(one_hot_encoder)
 
            vector_assembler = VectorAssembler(inputCols=self.schema.input_features,
@@ -67,7 +67,7 @@ class DataTransformation():
            stages.append(vector_assembler)
 
            standard_scaler = StandardScaler(inputCol=self.schema.vector_assembler_output,
-                                             outputCol=self.schema.scaled_vector_input_features).setHandleInvalid("skip")
+                                             outputCol=self.schema.scaled_vector_input_features)
            stages.append(standard_scaler)
            pipeline = Pipeline(
                 stages=stages
@@ -81,8 +81,9 @@ class DataTransformation():
         try:
             logging.info(f">>>>>>>>>>>Started data transformation <<<<<<<<<<<<<<<")
             dataframe: DataFrame = self.balance_dataset()
+            dataframe: DataFrame = dataframe.na.drop()
             logging.info(f"Number of row: [{dataframe.count()}] and column: [{len(dataframe.columns)}]")
-            logging.info(f"Splitting dataset into train and test set using ration:")
+            
 
             
             pipeline = self.get_data_transformation_pipeline()
@@ -92,35 +93,33 @@ class DataTransformation():
             require_columns = [self.schema.scaled_vector_input_features,'labelIndex']
             transformed_dataframe = transformed_pipeline.transform(dataframe)
             transformed_dataframe = transformed_dataframe.select(require_columns)
+            logging.info(f"Splitting dataset into train and test set using ration:")
             train, test = transformed_dataframe.randomSplit([0.8, 0.2])
             logging.info(f"Train dataset has number of row: [{train.count()}] and"
                         f" column: [{len(train.columns)}]")
             
             logging.info(f"Train dataset has number of row: [{test.count()}] and"
                         f" column: [{len(test.columns)}]")
-            export_pipeline_file_path = self.data_transformation_config.export_pipeline_file_path
+            
 
             # creating required directory
 
-            os.makedirs(export_pipeline_file_path,exist_ok=True)
+            os.makedirs(self.data_transformation_config.export_pipeline_file_path,exist_ok=True)
             os.makedirs(self.data_transformation_config.train_path_dir,exist_ok=True)
             os.makedirs(self.data_transformation_config.test_path_dir,exist_ok=True)
-
-            transformed_train_data_file_path = os.path.join(self.data_transformation_config.train_path_dir,
-                                                            'train_data'
-                                                            )
-            transformed_test_data_file_path = os.path.join(self.data_transformation_config.test_path_dir,
-                                                           'test_data'
-                                                           )
+            export_pipeline_file_path = self.data_transformation_config.export_pipeline_file_path
+            
             logging.info(f"Saving transformation pipeline at: [{export_pipeline_file_path}]")
             transformed_pipeline.save(export_pipeline_file_path)
-            logging.info(f"Saving transformed train data at: [{transformed_train_data_file_path}]")
-            train.write.parquet(transformed_train_data_file_path)
-            logging.info(f"Saving transformed test data at: [{transformed_test_data_file_path}]")
-            test.write.parquet(transformed_test_data_file_path)
+            logging.info(f"Saving transformed train data at: [{self.data_transformation_config.train_data_file_path}]")
+            train.write.parquet(self.data_transformation_config.train_data_file_path)
+            logging.info(f"Saving transformed test data at: [{self.data_transformation_config.test_data_file_pat}]")
+            test.write.parquet(self.data_transformation_config.test_data_file_path)
             
             return (
-                 'oka'
+                 self.data_transformation_config.export_pipeline_file_path,
+                 self.data_transformation_config.train_data_file_path,
+                 self.data_transformation_config.test_data_file_path
             )
         except Exception as e:
             raise ChurnException(e,sys)

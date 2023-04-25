@@ -14,4 +14,6 @@ class DataValidationConfig:
 @dataclass
 
 class DataTransformationConfig:
-    train_path: str = os.path.join('artifacts', 'train.csv')
+    train_path_dir: str = os.path.join('artifacts', 'train_data_dir')
+    test_path_dir: str = os.path.join('artifacts','test_path_dir')
+    export_pipeline_file_path: str = os.path.join('artifacts','pipeline')

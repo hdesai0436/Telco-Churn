@@ -37,6 +37,8 @@ class ChurnDataSchema:
         self.Churn_Score: str = 'Churn Score'
         self.CLTV: str = 'CLTV'
         self.Churn_Reason: str = 'Churn Reason'
+        self._id: str = '_id'
+
 
     
     def dataframe_schema(self) -> StructType:
@@ -74,7 +76,8 @@ class ChurnDataSchema:
                  StructField(self.Churn_Value, IntegerType()),
                   StructField(self.Churn_Score, IntegerType()),
                    StructField(self.CLTV, IntegerType()),
-                    StructField(self.Churn_Reason, StringType())
+                    StructField(self.Churn_Reason, StringType()),
+                    StructField(self._id, StringType())
                 ])
             return schema
         except Exception as e:
@@ -128,7 +131,7 @@ class ChurnDataSchema:
     @property
     def tf_one_hot_encoding_features(self) -> List[str]:
         return [f"tf_{col}" for col in self.one_hot_encoding_features]
-    
+    @property
     def unwanted_columns(self) -> List[str]:
         feature= [
             self.CustomerID,
@@ -143,18 +146,23 @@ class ChurnDataSchema:
             self.Churn_Value,
             self.Churn_Score,
             self.CLTV,
-            self.Churn_Reason
+            self.Churn_Reason,
+            self._id
 
         ]
         return feature
-    
+    @property
     def input_feature(self) -> List[str]:
         in_feature = self.one_hot_encoding_features + self.non_one_hont_encoder
         return in_feature
-    
+    @property
     def vector_assembler_output(self) -> str:
         return "va_input_features"
     
+    @property
+    def scaled_vector_input_features(self) -> str:
+        return "scaled_input_features"
+    @property
     def target_indexed_label(self) -> str:
         return f"indexed_{self.target_column}"
     

@@ -15,13 +15,13 @@ class DataIngestion:
 
         
     def initiate_data_ingestion(self):
-        logging.info('Enter the data ingestion method')
+        logging.info('Exporting data from mongodb to atifacts folder as raw data')
         try:
-            df = spark.read.csv("data/raw_data.csv")
+            df = spark.read.format("mongodb").option('database', 'curn_database').option('collection', 'data_churn').load()
             logging.info('read dataset as dataframe')
             os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
             
-            df.write.csv(self.ingestion_config.raw_data_path,index = None,
+            df.write.csv(self.ingestion_config.raw_data_path,
                   header=True)
             logging.info(f"Data is downloaded in {self.ingestion_config.raw_data_path}")
             logging.info('data Ingestion part is complated')

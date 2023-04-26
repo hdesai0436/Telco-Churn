@@ -20,3 +20,7 @@ class DataTransformationConfig:
     train_data_file_path: str = os.path.join(train_path_dir,'train_data')
     test_data_file_path: str = os.path.join(test_path_dir,'train_data')
     export_pipeline_file_path: str = export_pipeline_dir_path
+
+
+
+

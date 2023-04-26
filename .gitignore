@@ -164,3 +164,4 @@ data/
 artifacts/
 raw_data.csv
 mongo.py
+churn_artifacts/

@@ -1,0 +1,4 @@
+DATA_TRANSFORMATION_DIR = "data_transformation"
+DATA_TRANSFORMATION_PIPELINE_DIR = "transformed_pipeline"
+DATA_TRANSFORMATION_TRAIN_DIR = "train_data"
+DATA_TRANSFORMATION_FILE_NAME = "churn_train_data"

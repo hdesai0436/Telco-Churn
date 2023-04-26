@@ -1,4 +1,6 @@
 pyspark==3.2.1
 pandas
 -e .
+pymongo
+numpy
 

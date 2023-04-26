@@ -19,14 +19,14 @@ class DataIngestion:
         try:
             df = spark.read.format("mongodb").option('database', 'curn_database').option('collection', 'data_churn').load()
             logging.info('read dataset as dataframe')
-            os.makedirs(os.path.dirname(self.ingestion_config.raw_data_path),exist_ok=True)
+            os.makedirs(os.path.dirname(self.ingestion_config.data_ingestion_master_dir),exist_ok=True)
             
-            df.write.csv(self.ingestion_config.raw_data_path,
+            df.write.csv(self.ingestion_config.raw_data_file_path,
                   header=True)
-            logging.info(f"Data is downloaded in {self.ingestion_config.raw_data_path}")
+            logging.info(f"Data is downloaded in {self.ingestion_config.raw_data_file_path}")
             logging.info('data Ingestion part is complated')
             return (
-                self.ingestion_config.raw_data_path
+                self.ingestion_config.raw_data_file_path
             )
         except Exception as e:
             logging.exception(e)

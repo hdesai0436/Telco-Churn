@@ -18,7 +18,7 @@ class DataValidation(ChurnDataSchema):
          try:
               super().__init__()
               self.schema = schema
-              self.file_path = file_path.raw_data_path
+              self.file_path = file_path.raw_data_file_path
               self.data_validation_config = data_validation_config
          except Exception as e:
               raise ChurnException(e,sys) from e
@@ -92,20 +92,54 @@ class DataValidation(ChurnDataSchema):
 
          except Exception as e:
               raise(ChurnException(e,sys))
+    def balance_dataset(self) -> DataFrame:
+        try:
+            logging.info('starting balancing dataset')
+            dataframe: DataFrame = self.read_data()
+            logging.info('spliting dataframe base on minimum and maximum values')
+            major_df = dataframe.filter(col("Churn Label") == 'No')
+            minor_df = dataframe.filter(col("Churn Label") == 'Yes')
+            ratio = int(major_df.count()/minor_df.count())
+            
+            oversampled_df = minor_df.sample(withReplacement=True, fraction=2.3, seed=1)
+            
 
+            logging.info('balance dataset with oversampling data')
+            # combine both oversampled minority rows and previous majority rows 
+            combined_df = major_df.unionAll(oversampled_df)
+            
+            logging.info('finished balancing dataset')
+            return combined_df
+        except Exception as e:
+            raise ChurnException(e,sys)
          
     
     def initiate_data_validation(self):
          try:
               logging.info('Initiating data Preprocessing')
-              dataframe: DataFrame = self.read_data()
+              dataframe: DataFrame = self.balance_dataset()
               logging.info('Dropping columns unwanted')
+              os.makedirs(self.data_validation_config.train_data_dir,exist_ok=True)
+              os.makedirs(self.data_validation_config.test_data_dir,exist_ok=True)
               dataframe: DataFrame = self.drop_unwanted_columns(dataframe=dataframe)
-              dataframe.write.csv(self.data_validation_config.clean_data_path,header=True)
-              logging.info(f'clean data file saved {self.data_validation_config.clean_data_path}')
+              logging.info(f"Splitting dataset into train and test set using ration: 80:20")
+              train, test = dataframe.randomSplit([0.8, 0.2])
+              train.write.csv(self.data_validation_config.train_data_file_path,header=True)
+              test.write.csv(self.data_validation_config.test_data_file_path,header=True)
+              logging.info(f"Train dataset has number of row: [{train.count()}] and"
+                        f" column: [{len(train.columns)}]")
+
+              logging.info(f"Train dataset has number of row: [{test.count()}] and"
+                        f" column: [{len(test.columns)}]")
+              
+              logging.info(f'clean train data file saved {self.data_validation_config.train_data_file_path}')
+              logging.info(f'clean test data file saved {self.data_validation_config.test_data_file_path}')
               logging.info('finish initiate_data_validation part')
               return (
-                   self.data_validation_config.clean_data_path
+          
+                  self.data_validation_config.train_data_file_path,
+                  self.data_validation_config.test_data_file_path
+
               )
          except Exception as e:
               raise ChurnException(e,sys)

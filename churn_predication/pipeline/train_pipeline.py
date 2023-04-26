@@ -2,6 +2,7 @@ import os
 import sys
 from churn_predication.component.data_ingestion import DataIngestion
 from churn_predication.component.data_validation import DataValidation
+from churn_predication.component.data_tranformation import DataTransformation
 from churn_predication.exception import ChurnException
 from churn_predication.logger import logging
 
@@ -28,10 +29,19 @@ class TrainingPipeline:
         except Exception as e:
             raise ChurnException(e,sys)
         
+    def start_data_transformation(self):
+        try:
+            data_transformation = DataTransformation()
+            data_transformation_artifacts = data_transformation.initiate_data_transformation()
+            return data_transformation_artifacts
+        except Exception as e:
+            raise ChurnException(e,sys)
+        
 
     def start(self):
         try:
             data_ingestion_artifacts = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation()
+            data_transformation_artifacts = self.start_data_transformation()
         except Exception as e:
             raise ChurnException(e,sys)

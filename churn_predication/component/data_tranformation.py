@@ -56,12 +56,12 @@ class DataTransformation():
            stages.append(label_indexer)
            for im_one_hot_feature, string_indexer_col in zip(self.schema.one_hot_encoding_features,
                                                              self.schema.string_indexer_one_hot_features):
-               string_indexer = StringIndexer(inputCols=im_one_hot_feature,outputCol=string_indexer_col)
+               string_indexer = StringIndexer(inputCol=im_one_hot_feature,outputCol=string_indexer_col)
                stages.append(string_indexer)
-           one_hot_encoder = OneHotEncoder(inputCol=self.schema.string_indexer_one_hot_features,outputCols=self.schema.tf_one_hot_encoding_features)
+           one_hot_encoder = OneHotEncoder(inputCols=self.schema.string_indexer_one_hot_features,outputCols=self.schema.tf_one_hot_encoding_features)
            stages.append(one_hot_encoder)
 
-           vector_assembler = VectorAssembler(inputCols=self.schema.input_features,
+           vector_assembler = VectorAssembler(inputCols=self.schema.input_feature,
                                                outputCol=self.schema.vector_assembler_output)
 
            stages.append(vector_assembler)
@@ -104,7 +104,7 @@ class DataTransformation():
 
             # creating required directory
 
-            os.makedirs(self.data_transformation_config.export_pipeline_file_path,exist_ok=True)
+           
             os.makedirs(self.data_transformation_config.train_path_dir,exist_ok=True)
             os.makedirs(self.data_transformation_config.test_path_dir,exist_ok=True)
             export_pipeline_file_path = self.data_transformation_config.export_pipeline_file_path
@@ -113,7 +113,7 @@ class DataTransformation():
             transformed_pipeline.save(export_pipeline_file_path)
             logging.info(f"Saving transformed train data at: [{self.data_transformation_config.train_data_file_path}]")
             train.write.parquet(self.data_transformation_config.train_data_file_path)
-            logging.info(f"Saving transformed test data at: [{self.data_transformation_config.test_data_file_pat}]")
+            logging.info(f"Saving transformed test data at: [{self.data_transformation_config.test_data_file_path}]")
             test.write.parquet(self.data_transformation_config.test_data_file_path)
             
             return (

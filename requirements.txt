@@ -3,4 +3,4 @@ pandas
 -e .
 pymongo
 numpy
-
+boto

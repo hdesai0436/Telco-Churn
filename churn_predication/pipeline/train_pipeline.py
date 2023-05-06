@@ -5,6 +5,7 @@ from churn_predication.component.data_validation import DataValidation
 from churn_predication.component.data_tranformation import DataTransformation
 from churn_predication.component.model_trainer import ModelTrainer
 from churn_predication.component.model_eval import ModelEvaluation
+from churn_predication.component.model_pusher import ModelPusher
 from churn_predication.exception import ChurnException
 from churn_predication.logger import logging
 
@@ -52,6 +53,11 @@ class TrainingPipeline:
         a = e.eval()
         return a
 
+    def pusher(self):
+        p = ModelPusher()
+        pu = p.push_model()
+        return pu
+
     def start(self):
         try:
             data_ingestion_artifacts = self.start_data_ingestion()
@@ -59,6 +65,7 @@ class TrainingPipeline:
             data_transformation_artifacts = self.start_data_transformation()
             model_train = self.start_model_trainer()
             ev = self.eval()
+            pes = self.pusher()
         except Exception as e:
             raise ChurnException(e,sys)
 

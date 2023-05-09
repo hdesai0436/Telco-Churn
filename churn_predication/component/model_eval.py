@@ -11,6 +11,9 @@ from pyspark.sql import DataFrame
 from churn_predication.utils import get_score
 from churn_predication.constant import *
 
+from sklearn.metrics import classification_report,confusion_matrix
+
+
 class ModelEvaluation:
     def __init__(self, modeltrain_artifacts= ModelTrainerConfig(), data_validation_artifacts= DataValidationConfig(),schema=ChurnDataSchema()):
         super().__init__()
@@ -38,12 +41,17 @@ class ModelEvaluation:
         trained_model = PipelineModel.load(trained_model_file_path)
 
       
-        predictionAndTarget = trained_model.transform(dataframe).select("labelIndex", "prediction")
-        for i in MODEL_TRAINER_MODEL_METRIC_NAMES:
-            i = get_score(dataframe=predictionAndTarget, metric_name=f'{i}',
-                                            label_col="labelIndex",
-                                            prediction_col="prediction")
-            print(i)
+        predictionAndTarget = trained_model.transform(dataframe)
+
+        y_true = predictionAndTarget.select(['labelIndex']).collect()
+        y_pred =  predictionAndTarget.select(['prediction']).collect()
+        print(confusion_matrix(y_true,y_pred))
+        print(classification_report(y_true,y_pred))
+        # for i in MODEL_TRAINER_MODEL_METRIC_NAMES:
+        #     i = get_score(dataframe=predictionAndTarget, metric_name=f'{i}',
+        #                                     label_col="labelIndex",
+        #                                     prediction_col="prediction")
+        #     print(i)
         # acc = evaluatorMulti.evaluate(predictionAndTarget, {evaluatorMulti.metricName: "accuracy"})
 
         # f1 = evaluatorMulti.evaluate(predictionAndTarget, {evaluatorMulti.metricName: "f1"})

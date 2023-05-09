@@ -65,10 +65,7 @@ class TrainingPipeline:
             data_transformation_artifacts = self.start_data_transformation()
             model_train = self.start_model_trainer()
             ev = self.eval()
-            pes = self.pusher()
+            #pes = self.pusher()
         except Exception as e:
             raise ChurnException(e,sys)
 
-if __name__ == '__main__':
-    a = TrainingPipeline()
-    a.start()

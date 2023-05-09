@@ -3,4 +3,5 @@ pandas
 -e .
 pymongo
 numpy
-boto
+boto3
+sklearn

@@ -6,9 +6,9 @@ import shutil
 import os
 from churn_predication.exception import ChurnException
 from churn_predication.logger import logging
-
+import re
 class S3Estimator:
-    def __init__(self,bucket_name,model_dir,region_name = 'us-east-1',):
+    def __init__(self,bucket_name,model_dir,model_key,region_name = 'us-east-1',):
         super().__init__()
         aws_connect_config = AWSConnectionConfig(region_name=region_name)
         self.s3_client = aws_connect_config.s3_client
@@ -24,6 +24,7 @@ class S3Estimator:
         self.bucket = self.resource.Bucket(bucket_name)
         self.bucket_name = bucket_name
         self.model_dir = model_dir
+        self.model_key = model_key
         self.compression_format = "zip"
         self.model_file_name = "model.zip"
         self.timestamp = str(time.time())[:10]
@@ -71,7 +72,7 @@ class S3Estimator:
                 return None
             timestamp = max(timestamps)
 
-            model_path = f"{key}{timestamp}/{self.__model_file_name}"
+            model_path = f"{key}{timestamp}/{self.model_file_name}"
             return model_path
         except Exception as e:
             raise ChurnException(e,sys)
@@ -168,3 +169,13 @@ class S3Estimator:
             return model_dir
         except Exception as e:
             raise ChurnException(e,sys)
+
+    def get_latest_model_path_folder_download(self, ):
+        try:
+            dir_list = os.listdir(self.model_dir)
+            latest_model_folder = dir_list[-1]
+            tmp_dir = os.path.join(self.model_dir, latest_model_folder)
+            model_path = os.path.join(self.model_dir, latest_model_folder, os.listdir(tmp_dir)[-1])
+            return model_path
+        except Exception as e:
+            raise FinanceException(e, sys)

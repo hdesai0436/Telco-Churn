@@ -101,13 +101,16 @@ class DataValidation(ChurnDataSchema):
             minor_df = dataframe.filter(col("Churn Label") == 'Yes')
             ratio = int(major_df.count()/minor_df.count())
             
-            oversampled_df = minor_df.sample(withReplacement=True, fraction=2.3, seed=1)
+            oversampled_df = minor_df.sample(withReplacement=True, fraction=2.5, seed=10)
             
 
             logging.info('balance dataset with oversampling data')
             # combine both oversampled minority rows and previous majority rows 
             combined_df = major_df.unionAll(oversampled_df)
-            
+            major_df = combined_df.filter(col("Churn Label") == 'No')
+            minor_df = combined_df.filter(col("Churn Label") == 'Yes')
+            print(major_df.count())
+            print(minor_df.count())
             logging.info('finished balancing dataset')
             return combined_df
         except Exception as e:
@@ -123,7 +126,7 @@ class DataValidation(ChurnDataSchema):
               os.makedirs(self.data_validation_config.test_data_dir,exist_ok=True)
               dataframe: DataFrame = self.drop_unwanted_columns(dataframe=dataframe)
               logging.info(f"Splitting dataset into train and test set using ration: 80:20")
-              train, test = dataframe.randomSplit([0.8, 0.2])
+              train, test = dataframe.randomSplit([0.8, 0.2],seed=1025)
               train.write.csv(self.data_validation_config.train_data_file_path,header=True)
               test.write.csv(self.data_validation_config.test_data_file_path,header=True)
               logging.info(f"Train dataset has number of row: [{train.count()}] and"

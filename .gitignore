@@ -165,3 +165,4 @@ artifacts/
 raw_data.csv
 mongo.py
 churn_artifacts/
+saved_models/

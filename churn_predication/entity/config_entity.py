@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 import os
 from churn_predication.constant import *
-from churn_predication.constant.model import S3_MODEL_DIR_KEY, S3_MODEL_BUCKET_NAME
+from churn_predication.constant.model import S3_MODEL_DIR_KEY, S3_MODEL_BUCKET_NAME, MODEL_SAVED_DIR
 @dataclass
 class get_pipeline_config():
     artifact_dir = PIPELINE_ARTIFACT_DIR
@@ -64,8 +64,21 @@ class ModelEvulationConfig:
     model_evaluation_report_file_path = os.path.join(
                 model_evaluation_dir, MODEL_EVALUATION_REPORT_DIR, MODEL_EVALUATION_REPORT_FILE_NAME
             )
+    model_dir_key = S3_MODEL_DIR_KEY
+    bucket_name = S3_MODEL_BUCKET_NAME
+    model_dir = MODEL_SAVED_DIR
 @dataclass
 class ModelPusherConfig:
-    model_dir  = S3_MODEL_DIR_KEY
-    bucket_name=S3_MODEL_BUCKET_NAME
+    model_dir_key  = S3_MODEL_DIR_KEY
+    bucket_name= S3_MODEL_BUCKET_NAME
+    model_dir = MODEL_SAVED_DIR
 
+class Modelevulationartifacts:
+    def __init__(self,model_accepted):
+        self.model_accepted = model_accepted
+
+    def to_dict(self):
+        return self__dict__
+
+    def __str__(self):
+        return str(self.to_dict())

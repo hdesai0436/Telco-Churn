@@ -4,4 +4,6 @@ pandas
 pymongo
 numpy
 boto3
-sklearn
+scikit-learn
+python-dotenv
+Flask

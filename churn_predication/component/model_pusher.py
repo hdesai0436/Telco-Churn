@@ -14,9 +14,9 @@ class ModelPusher:
     def push_model(self):
         try:
             logging.info('model start pushing in s3 bucket')
-            m = S3Estimator(bucket_name=self.model_pusher_artifacts.bucket_name,model_dir=self.model_pusher_artifacts.model_dir)
+            m = S3Estimator(bucket_name=self.model_pusher_artifacts.bucket_name,model_dir=self.model_pusher_artifacts.model_dir,model_key=self.model_pusher_artifacts.model_dir_key)
             file_path = self.modeltrain_artifacts.trained_model_file_path
-            m.save(model_dir=os.path.dirname(file_path), key=self.model_pusher_artifacts.model_dir)
+            m.save(model_dir=os.path.dirname(file_path),key=self.model_pusher_artifacts.model_dir_key)
             logging.info('Model save in S3 bucket in zip file')
         except Exception as e:
             raise ChurnException(e,sys)

@@ -10,6 +10,7 @@ from churn_predication.exception import ChurnException
 from churn_predication.logger import logging
 
 class TrainingPipeline:
+    is_pipeline_running=False
     def __init__(self):
         pass
 
@@ -49,8 +50,8 @@ class TrainingPipeline:
             raise ChurnException(e,sys)
         
     def eval(self):
-        e = ModelEvaluation()
-        a = e.eval()
+        Model_evaluation = ModelEvaluation()
+        a = Model_evaluation.intiate_model_evaluation()
         return a
 
     def pusher(self):
@@ -60,12 +61,16 @@ class TrainingPipeline:
 
     def start(self):
         try:
+            TrainingPipeline.is_pipeline_running=True
             data_ingestion_artifacts = self.start_data_ingestion()
             data_validation_artifact = self.start_data_validation()
             data_transformation_artifacts = self.start_data_transformation()
             model_train = self.start_model_trainer()
             ev = self.eval()
-            #pes = self.pusher()
+            if ev.model_accepted:
+                self.pusher()
+
+            
         except Exception as e:
             raise ChurnException(e,sys)
 

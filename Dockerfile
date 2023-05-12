@@ -15,4 +15,5 @@ RUN mkdir /app
 COPY . /app/
 WORKDIR /app/
 RUN pip3 install -r requirements.txt
-cmd ['main.py']
+ENTRYPOINT [ "python3" ]
+cmd ["main.py"]

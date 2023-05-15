@@ -107,7 +107,11 @@ class ChurnDataSchema:
             self.Total_Charges
         ]
         return no_feature
-    
+    @property
+    def required_prediction_columns(self) -> List[str]:
+        features = self.one_hot_encoding_features + self.non_one_hont_encoder
+        return features
+
     @property
     def im_one_hot_encoding_features(self) -> List[str]:
         return [f"im_{col}" for col in self.one_hot_encoding_features]
